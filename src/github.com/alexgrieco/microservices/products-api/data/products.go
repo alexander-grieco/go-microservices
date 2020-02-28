@@ -1,21 +1,34 @@
 package data
 
 import (
+	"encoding/json"
+	"io"
 	"time"
 )
 
+// Product is a struct that includes all the necessary information for the product
 type Product struct {
-	ID          int
-	Name        string
-	Description string
-	Price       float32
-	SKU         string
-	CreatedOn   string
-	UpdatedOn   string
-	DeletedOn   string
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Price       float32 `json:"price"`
+	SKU         string  `json:"sku"`
+	CreatedOn   string  `json:"-"`
+	UpdatedOn   string  `json:"-"`
+	DeletedOn   string  `json:"-"`
 }
 
-func GetProducts() []*Product {
+// Products is a subset of type Product with only user-important info
+type Products []*Product
+
+// ToJSON returns a JSON encoded list of Products (a subset of the fields in Product)
+func (p *Products) ToJSON(w io.Writer) error {
+	e := json.NewEncoder(w)
+	return e.Encode(p)
+}
+
+// GetProducts returns list of type Product
+func GetProducts() Products {
 	return productList
 }
 
