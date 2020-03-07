@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"context"
+	"fmt"
 
 	"github.com/alexgrieco/microservices/products-api/data"
 	"github.com/gorilla/mux"
@@ -68,6 +69,18 @@ func (p Products) MiddlewareProductValidation(next http.Handler) http.Handler {
 		if err != nil {
 			p.l.Println("[ERROR] deserializing product", err)
 			http.Error(rw, "Error reading product", http.StatusBadRequest)
+			return
+		}
+		
+		// validate the product
+		err = prod.Validate()
+		if err != nil {
+			p.l.Println("[ERROR] validating product", err)
+			http.Error(
+				rw, 
+				fmt.Sprintf("Error validating product: %s", err), 
+				http.StatusBadRequest,
+			)
 			return
 		}
 		
